@@ -4,9 +4,6 @@ from setuptools import setup, find_packages
 VERSION = '0.0.0'
 
 entry_points = {
-	"z3c.autoinclude.plugin": [
-		'target = nti.contentrendering',
-	],
 }
 
 TESTS_REQUIRE = [
@@ -16,6 +13,7 @@ TESTS_REQUIRE = [
 	'nose-progressive',
 	'nose2[coverage_plugin]',
 	'pyhamcrest',
+	'nti.nose_traceback_info',
 	'nti.testing'
 ]
 
@@ -27,13 +25,13 @@ setup(
 	description = "Support for links",
 	long_description = codecs.open('README.rst', encoding='utf-8').read(),
 	license = 'Proprietary',
-	keywords = 'pyramid preference',
+	keywords = 'Links',
 	classifiers = [
 		'Intended Audience :: Developers',
 		'Natural Language :: English',
 		'Operating System :: OS Independent',
 		'Programming Language :: Python :: 2',
-		'Programming Language :: Python :: 2.7'
+		'Programming Language :: Python :: 2.7',
 		'Programming Language :: Python :: Implementation :: CPython'
 	],
 	packages=find_packages('src'),
@@ -49,8 +47,9 @@ setup(
 		'zope.traversing',
 		'zope.mimetype',
 		'zope.schema',
+		'nti.dataserver.core',
 		'nti.externalization',
-		'nti.nose_traceback_info',
+		'nti.traversal'
 	],
 	extras_require={
 		'test': TESTS_REQUIRE,
@@ -61,3 +60,4 @@ setup(
 	],
 	entry_points=entry_points
 )
+

@@ -19,13 +19,11 @@ from zope.location.interfaces import LocationError
 
 from zope.traversing.interfaces import TraversalError
 
-from nti.dataserver import traversal
-
-from nti.dataserver.interfaces import ILink
-from nti.dataserver.interfaces import ICreated
-from nti.dataserver.interfaces import IDataserver
-from nti.dataserver.interfaces import ILinkExternalHrefOnly
-from nti.dataserver.interfaces import IShouldHaveTraversablePath
+from nti.dataserver.core.interfaces import ILink
+from nti.dataserver.core.interfaces import ICreated
+from nti.dataserver.core.interfaces import IDataserver
+from nti.dataserver.core.interfaces import ILinkExternalHrefOnly
+from nti.dataserver.core.interfaces import IShouldHaveTraversablePath
 
 from nti.mimetype.mimetype import nti_mimetype_from_object
 
@@ -39,6 +37,9 @@ from nti.ntiids.ntiids import TYPE_OID
 from nti.ntiids.ntiids import is_ntiid_of_type
 from nti.ntiids.ntiids import is_valid_ntiid_string
 
+from nti.traversal.traversal import normal_resource_path
+from nti.traversal.traversal import is_valid_resource_path
+
 def _root_for_ntiid_link( link, nearest_site ):
 	# Place the NTIID reference under the most specific place possible: the owner,
 	# if in belongs to someone, otherwise the global Site
@@ -46,17 +47,17 @@ def _root_for_ntiid_link( link, nearest_site ):
 	target = link.target
 	if ICreated.providedBy( target ) and target.creator:
 		try:
-			root = traversal.normal_resource_path( target.creator )
+			root = normal_resource_path( target.creator )
 		except TypeError:
 			pass
 	if root is None and ICreated.providedBy( link ) and link.creator:
 		try:
-			root = traversal.normal_resource_path( link.creator )
+			root = normal_resource_path( link.creator )
 		except TypeError:
 			pass
 
 	if root is None:
-		root = traversal.normal_resource_path( nearest_site )
+		root = normal_resource_path( nearest_site )
 
 	return root
 
@@ -124,14 +125,14 @@ def render_link( link, nearest_site=None ):
 			else:
 				href = root + '/NTIIDs/' + urllib.quote( ntiid )
 
-	elif traversal.is_valid_resource_path( target ):
+	elif is_valid_resource_path( target ):
 		href = target
 	else:
 		# This will raise a LocationError or TypeError if something is broken
 		# in the chain. That shouldn't happen and needs to be dealt with
 		# at dev time.
 		__traceback_info__ = rel, link.elements # next fun puts target in __traceback_info__
-		href = traversal.normal_resource_path( target )
+		href = normal_resource_path( target )
 
 	assert href
 
@@ -166,7 +167,7 @@ def render_link( link, nearest_site=None ):
 	if link.title:
 		result['title'] = link.title
 
-	if 	not traversal.is_valid_resource_path( href ) and \
+	if 	not is_valid_resource_path( href ) and \
 		not is_valid_ntiid_string( href ): # pragma: no cover
 		# This shouldn't be possible anymore.
 		__traceback_info__ = href, link, target, nearest_site
