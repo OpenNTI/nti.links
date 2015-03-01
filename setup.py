@@ -44,11 +44,12 @@ setup(
 		'zope.component',
 		'zope.interface',
 		'zope.location',
-		'zope.traversing',
 		'zope.mimetype',
+		'zope.traversing',
 		'zope.schema',
 		'nti.dataserver.core',
 		'nti.externalization',
+		'nti.schema',
 		'nti.traversal'
 	],
 	extras_require={

@@ -14,22 +14,13 @@ from nti.testing.layers import GCLayerMixin
 from nti.testing.layers import ZopeComponentLayer
 from nti.testing.layers import ConfiguringLayerMixin
 
-from nti.dataserver.tests.mock_dataserver import DSInjectorMixin
-
 import zope.testing.cleanup
 
 class SharedConfiguringTestLayer(ZopeComponentLayer,
 								 GCLayerMixin,
-								 ConfiguringLayerMixin,
-								 DSInjectorMixin):
+								 ConfiguringLayerMixin):
 
-	set_up_packages = (
-					   'nti.dataserver',
-					   'nti.contentrendering',
-					   'nti.assessment',
-					   'nti.externalization',
-					   'nti.mimetype',
-					   )
+	set_up_packages = ('nti.links',)
 
 	@classmethod
 	def setUp(cls):
@@ -50,45 +41,5 @@ class SharedConfiguringTestLayer(ZopeComponentLayer,
 
 import unittest
 
-class AssessmentTestCase(unittest.TestCase):
+class LinksTestCase(unittest.TestCase):
 	layer = SharedConfiguringTestLayer
-
-from nti.contentrendering.tests import simpleLatexDocumentText
-
-def _simpleLatexDocument(maths):
-	return simpleLatexDocumentText(preludes=(br'\usepackage{ntiassessment}',),
-									bodies=maths)
-simpleLatexDocument = _simpleLatexDocument
-
-# ==========
-
-from hamcrest.core.base_matcher import BaseMatcher
-
-class GradeMatcher(BaseMatcher):
-	def __init__(self, value, response):
-		super(GradeMatcher, self).__init__()
-		self.value = value
-		self.response = response
-
-	def _matches(self, solution):
-		return solution.grade(self.response) == self.value
-
-	def describe_to(self, description):
-		description.append_text('solution that grades ').append_text(str(self.response)).append_text(' as ').append_text(str(self.value))
-
-	def describe_mismatch(self, item, mismatch_description):
-		mismatch_description.append_text('solution ').append_text(str(type(item))).append_text(' ').append_text(repr(item))
-		if getattr(item, 'allowed_units', ()):
-			mismatch_description.append_text(" units " + str(item.allowed_units))
-
-		mismatch_description.append_text(' graded ' + repr(self.response) + ' as ' + str(not self.value))
-
-	def __repr__(self):
-		return 'solution that grades as ' + str(self.value)
-
-def grades_correct(response):
-	return GradeMatcher(True, response)
-grades_right = grades_correct
-
-def grades_wrong(response):
-	return GradeMatcher(False, response)
