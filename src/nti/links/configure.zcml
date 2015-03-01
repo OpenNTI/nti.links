@@ -28,5 +28,10 @@
 	-->
 	<adapter factory=".externalization.LinkExternal"
 			 name="second-pass" />
-			 
+		
+	<!--
+		<adapter factory=".links.NoOpLinkExternalObjectAdapter"
+				 name="wsgi" />
+	-->	 
+
 </configure>
