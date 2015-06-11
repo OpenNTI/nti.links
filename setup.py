@@ -47,7 +47,7 @@ setup(
 		'zope.mimetype',
 		'zope.traversing',
 		'zope.schema',
-		'nti.dataserver.core',
+		'nti.dataserver_core',
 		'nti.externalization',
 		'nti.schema',
 		'nti.traversal'

@@ -13,8 +13,8 @@ import zope.deferredimport
 zope.deferredimport.initialize()
 
 zope.deferredimport.deprecatedFrom(
-    "Moved to nti.dataserver.core.interfaces",
-    "nti.dataserver.core.interfaces",
+    "Moved to nti.dataserver_core.interfaces",
+    "nti.dataserver_core.interfaces",
     "ILink",
     "ILinkExternalHrefOnly",
     "ILinked")

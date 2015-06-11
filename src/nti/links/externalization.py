@@ -19,11 +19,11 @@ from zope.location.interfaces import LocationError
 
 from zope.traversing.interfaces import TraversalError
 
-from nti.dataserver.core.interfaces import ILink
-from nti.dataserver.core.interfaces import ICreated
-from nti.dataserver.core.interfaces import IDataserver
-from nti.dataserver.core.interfaces import ILinkExternalHrefOnly
-from nti.dataserver.core.interfaces import IShouldHaveTraversablePath
+from nti.dataserver_core.interfaces import ILink
+from nti.dataserver_core.interfaces import ICreated
+from nti.dataserver_core.interfaces import IDataserver
+from nti.dataserver_core.interfaces import ILinkExternalHrefOnly
+from nti.dataserver_core.interfaces import IShouldHaveTraversablePath
 
 from nti.mimetype.mimetype import nti_mimetype_from_object
 

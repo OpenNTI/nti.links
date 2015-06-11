@@ -17,7 +17,7 @@ from functools import total_ordering
 from zope import interface
 from zope import component
 
-from nti.dataserver.core.interfaces import ILink
+from nti.dataserver_core.interfaces import ILink
 
 from nti.externalization.persistence import NoPickle
 from nti.externalization.interfaces import IExternalObject
