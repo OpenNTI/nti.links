@@ -15,6 +15,7 @@ import collections
 
 from zope import component
 from zope import interface
+
 from zope.location.interfaces import LocationError
 
 from zope.traversing.interfaces import TraversalError
@@ -25,13 +26,13 @@ from nti.dataserver_core.interfaces import IDataserver
 from nti.dataserver_core.interfaces import ILinkExternalHrefOnly
 from nti.dataserver_core.interfaces import IShouldHaveTraversablePath
 
-from nti.mimetype.mimetype import nti_mimetype_from_object
-
 from nti.externalization.singleton import SingletonDecorator
 from nti.externalization.interfaces import StandardExternalFields
 from nti.externalization.interfaces import IExternalObjectDecorator
 from nti.externalization.interfaces import ILocatedExternalMapping
 from nti.externalization.interfaces import IInternalObjectExternalizer
+
+from nti.mimetype.mimetype import nti_mimetype_from_object
 
 from nti.ntiids.ntiids import TYPE_OID
 from nti.ntiids.ntiids import is_ntiid_of_type
@@ -40,28 +41,28 @@ from nti.ntiids.ntiids import is_valid_ntiid_string
 from nti.traversal.traversal import normal_resource_path
 from nti.traversal.traversal import is_valid_resource_path
 
-def _root_for_ntiid_link( link, nearest_site ):
+def _root_for_ntiid_link(link, nearest_site):
 	# Place the NTIID reference under the most specific place possible: the owner,
 	# if in belongs to someone, otherwise the global Site
 	root = None
 	target = link.target
-	if ICreated.providedBy( target ) and target.creator:
+	if ICreated.providedBy(target) and target.creator:
 		try:
-			root = normal_resource_path( target.creator )
+			root = normal_resource_path(target.creator)
 		except TypeError:
 			pass
-	if root is None and ICreated.providedBy( link ) and link.creator:
+	if root is None and ICreated.providedBy(link) and link.creator:
 		try:
-			root = normal_resource_path( link.creator )
+			root = normal_resource_path(link.creator)
 		except TypeError:
 			pass
 
 	if root is None:
-		root = normal_resource_path( nearest_site )
+		root = normal_resource_path(nearest_site)
 
 	return root
 
-def render_link( link, nearest_site=None ):
+def render_link(link, nearest_site=None):
 	"""
 	:param link: The link to render. Optionally, the link may be
 		:class:`loc_interfaces.ILocation` if we need to find a site. The target
@@ -82,19 +83,19 @@ def render_link( link, nearest_site=None ):
 	content_type = link.target_mime_type
 	content_type_derived_from_target = False
 	if not content_type:
-		content_type = nti_mimetype_from_object( target )
+		content_type = nti_mimetype_from_object(target)
 		content_type_derived_from_target = True
 
 	href = None
-	ntiid = getattr( target, 'ntiid', None ) \
-		or getattr( target, 'NTIID', None )
+	ntiid = getattr(target, 'ntiid', None) \
+		or getattr(target, 'NTIID', None)
 	if ntiid:
 		ntiid_derived_from_target = True
-	elif isinstance(target,six.string_types) and is_valid_ntiid_string(target):
+	elif isinstance(target, six.string_types) and is_valid_ntiid_string(target):
 		ntiid = target
-		ntiid_derived_from_target = False # it *is* the target
+		ntiid_derived_from_target = False  # it *is* the target
 
-	if ntiid and not IShouldHaveTraversablePath.providedBy( target ):
+	if ntiid and not IShouldHaveTraversablePath.providedBy(target):
 		# Although (enclosures and entities and other things with IShouldHaveTraversablePath)
 		# have an NTIID, we want to avoid using it
 		# if possible because it has a much nicer pretty url.
@@ -106,7 +107,7 @@ def render_link( link, nearest_site=None ):
 		# TODO: Somewhere in the site there should be an object that represents each of these,
 		# and we should be able to find it, get a traversal path for it, and use it here.
 		# That object should implement the lookup behaviour found currently in ntiids.
-		if is_valid_ntiid_string( ntiid ):
+		if is_valid_ntiid_string(ntiid):
 			# In the past, if the link was not ICreated, the root would become
 			# the nearest site. But not all site objects support the Objects and
 			# NTIIDs traversal. So the simplest thing to do is to use the root
@@ -114,39 +115,39 @@ def render_link( link, nearest_site=None ):
 			# FIXME: This may not be quite correct for NTIIDs in the future?
 			# It should always be correct for OIDs though.
 			try:
-				ds_root = component.getUtility( IDataserver ).root
+				ds_root = component.getUtility(IDataserver).root
 			except LookupError:
 				logger.warn("No dataserver found, you must have provided a site. Only in test cases")
 				ds_root = nearest_site
-			root = _root_for_ntiid_link( link, ds_root )
+			root = _root_for_ntiid_link(link, ds_root)
 
-			if is_ntiid_of_type( ntiid, TYPE_OID ):
-				href = root + '/Objects/' + urllib.quote( ntiid )
+			if is_ntiid_of_type(ntiid, TYPE_OID):
+				href = root + '/Objects/' + urllib.quote(ntiid)
 			else:
-				href = root + '/NTIIDs/' + urllib.quote( ntiid )
+				href = root + '/NTIIDs/' + urllib.quote(ntiid)
 
-	elif is_valid_resource_path( target ):
+	elif is_valid_resource_path(target):
 		href = target
 	else:
 		# This will raise a LocationError or TypeError if something is broken
 		# in the chain. That shouldn't happen and needs to be dealt with
 		# at dev time.
-		__traceback_info__ = rel, link.elements # next fun puts target in __traceback_info__
-		href = normal_resource_path( target )
+		__traceback_info__ = rel, link.elements  # next fun puts target in __traceback_info__
+		href = normal_resource_path(target)
 
 	assert href
 
 	# Join any additional path segments that were requested
 	if link.elements:
-		href = href + ('/' if not href.endswith('/') else '') + '/'.join( link.elements )
+		href = href + ('/' if not href.endswith('/') else '') + '/'.join(link.elements)
 		# TODO: quoting
 	if link.params:
 		href = href + '?%s' % urllib.urlencode(link.params)
 
-	result = component.getMultiAdapter( (), ILocatedExternalMapping )
-	result.update( { StandardExternalFields.CLASS: 'Link',
+	result = component.getMultiAdapter((), ILocatedExternalMapping)
+	result.update({ StandardExternalFields.CLASS: 'Link',
 					 StandardExternalFields.HREF: href,
-					 'rel': rel } )
+					 'rel': rel })
 	if content_type:
 		# If a method was provided, do not try to infer from the target object,
 		# must be explicit
@@ -157,23 +158,23 @@ def render_link( link, nearest_site=None ):
 				not content_type_derived_from_target:
 				result['type'] = content_type
 
-	if is_valid_ntiid_string( ntiid ):
+	if is_valid_ntiid_string(ntiid):
 		if not link.ignore_properties_of_target or not ntiid_derived_from_target:
 			result['ntiid'] = ntiid
 
 	if link.method:
 		result['method'] = link.method
-	
+
 	if link.title:
 		result['title'] = link.title
 
-	if 	not is_valid_resource_path( href ) and \
-		not is_valid_ntiid_string( href ): # pragma: no cover
+	if 	not is_valid_resource_path(href) and \
+		not is_valid_ntiid_string(href):  # pragma: no cover
 		# This shouldn't be possible anymore.
 		__traceback_info__ = href, link, target, nearest_site
 		raise TraversalError(href)
 
-	if ILinkExternalHrefOnly_providedBy( link ):
+	if ILinkExternalHrefOnly_providedBy(link):
 		# The marker that identifies the link should be replaced by just the href
 		# Because of the decorator, it's easiest to just do this here
 		result = result['href']
@@ -183,13 +184,15 @@ def render_link( link, nearest_site=None ):
 @interface.implementer(IInternalObjectExternalizer)
 @component.adapter(ILink)
 class LinkExternal(object):
-	"See :func:`render_link`"
+	"""
+	See :func:`render_link`
+	"""
 
-	def __init__( self, context ):
+	def __init__(self, context):
 		self.context = context
 
 	def toExternalObject(self, **kwargs):
-		return render_link( self.context )
+		return render_link(self.context)
 
 _MutableMapping = collections.MutableMapping
 _MutableSequence = collections.MutableSequence
@@ -209,11 +212,11 @@ class LinkExternalObjectDecorator(object):
 	__metaclass__ = SingletonDecorator
 
 	def decorateExternalObject(self, context, obj):
-		if isinstance( obj, _MutableSequence ):
+		if isinstance(obj, _MutableSequence):
 			for i, x in enumerate(obj):
-				if ILink_providedBy( x ):
-					obj[i] = render_link( x )
-		elif isinstance( obj, _MutableMapping ) and obj.get( LINKS, () ):
+				if ILink_providedBy(x):
+					obj[i] = render_link(x)
+		elif isinstance(obj, _MutableMapping) and obj.get(LINKS, ()):
 			links = []
 			for link in obj[LINKS]:
 				__traceback_info__ = link

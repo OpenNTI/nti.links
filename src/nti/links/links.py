@@ -14,17 +14,17 @@ logger = __import__('logging').getLogger(__name__)
 import six
 from functools import total_ordering
 
-from zope import interface
 from zope import component
+from zope import interface
 
 from nti.dataserver_core.interfaces import ILink
 
 from nti.externalization.persistence import NoPickle
 from nti.externalization.interfaces import IExternalObject
 
-@interface.implementer( ILink )
-@total_ordering
 @NoPickle
+@total_ordering
+@interface.implementer(ILink)
 class Link(object):
 	"""
 	Default implementation of ILink.
@@ -88,19 +88,19 @@ class Link(object):
 		if ignore_properties_of_target:
 			self.ignore_properties_of_target = True
 
-	def __repr__( self ):
+	def __repr__(self):
 		# Its very easy to get into an infinite recursion here
 		# if the target wants to print its links
 		return "<Link rel='%s' %s/%s>" % (self.rel, type(self.target), id(self.target))
 
-	def __hash__( self ):
+	def __hash__(self):
 		# In infinite recursion cases we do a terrible job. We only
 		# really work in simple cases
 		if isinstance(self.target, six.string_types):
-			return hash( self.rel + self.target )
-		return hash( self.rel )
+			return hash(self.rel + self.target)
+		return hash(self.rel)
 
-	def __eq__( self, other ):
+	def __eq__(self, other):
 		try:
 			return self is other or (self.rel == other.rel and \
 									 self.target == other.target and \
@@ -108,20 +108,20 @@ class Link(object):
 		except AttributeError:
 			return NotImplemented
 
-	def __lt__( self, other ):
+	def __lt__(self, other):
 		try:
 			return (self.rel, self.target, self.elements) < (other.rel, other.target, other.elements)
 		except AttributeError:
 			return NotImplemented
 
-	def __gt__( self, other ):
+	def __gt__(self, other):
 		try:
 			return (self.rel, self.target, self.elements) > (other.rel, other.target, other.elements)
 		except AttributeError:
 			return NotImplemented
 
-@interface.implementer(IExternalObject)
 @component.adapter(Link)
+@interface.implementer(IExternalObject)
 class NoOpLinkExternalObjectAdapter(object):
 	"""
 	Implementation of :class:`interfaces.IExternalObject` for
