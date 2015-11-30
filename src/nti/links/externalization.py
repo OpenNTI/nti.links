@@ -146,8 +146,8 @@ def render_link(link, nearest_site=None):
 
 	result = component.getMultiAdapter((), ILocatedExternalMapping)
 	result.update({ StandardExternalFields.CLASS: 'Link',
-					 StandardExternalFields.HREF: href,
-					 'rel': rel })
+					StandardExternalFields.HREF: href,
+					'rel': rel })
 	if content_type:
 		# If a method was provided, do not try to infer from the target object,
 		# must be explicit
