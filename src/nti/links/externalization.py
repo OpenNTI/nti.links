@@ -221,9 +221,9 @@ class LinkExternalObjectDecorator(object):
 			for link in obj[LINKS]:
 				__traceback_info__ = link
 				try:
-					rendered_linked = render_link(link) if ILink_providedBy(link) else link
-					links.append(rendered_linked)
+					rendered = render_link(link) if ILink_providedBy(link) else link
+					links.append(rendered)
 				except (TypeError, LocationError):
-					logger.error("Error rendering link %s" % link)
+					logger.error("Error rendering link %s", link)
 
 			obj[LINKS] = links
