@@ -10,3 +10,5 @@ __docformat__ = "restructuredtext en"
 logger = __import__('logging').getLogger(__name__)
 
 from .links import Link
+
+from .externalization import render_link
