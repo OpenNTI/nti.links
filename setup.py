@@ -32,7 +32,8 @@ setup(
 		'Operating System :: OS Independent',
 		'Programming Language :: Python :: 2',
 		'Programming Language :: Python :: 2.7',
-		'Programming Language :: Python :: Implementation :: CPython'
+		'Programming Language :: Python :: Implementation :: CPython',
+		'Programming Language :: Python :: Implementation :: PyPy'
 	],
 	packages=find_packages('src'),
 	package_dir={'': 'src'},
@@ -47,17 +48,17 @@ setup(
 		'zope.mimetype',
 		'zope.traversing',
 		'zope.schema',
+		'nti.coremetadata',
 		'nti.dataserver_core',
 		'nti.externalization',
+		'nti.mimetype',
+		'nti.ntiids',
 		'nti.schema',
 		'nti.traversal'
 	],
 	extras_require={
 		'test': TESTS_REQUIRE,
 	},
-	dependency_links=[
-		'git+https://github.com/NextThought/nti.nose_traceback_info.git#egg=nti.nose_traceback_info'
-	],
 	entry_points=entry_points
 )
 

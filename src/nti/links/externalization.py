@@ -20,8 +20,9 @@ from zope.location.interfaces import LocationError
 
 from zope.traversing.interfaces import TraversalError
 
+from nti.coremetadata.interfaces import ICreated
+
 from nti.dataserver_core.interfaces import ILink
-from nti.dataserver_core.interfaces import ICreated
 from nti.dataserver_core.interfaces import IDataserver
 from nti.dataserver_core.interfaces import ILinkExternalHrefOnly
 from nti.dataserver_core.interfaces import IShouldHaveTraversablePath
@@ -225,5 +226,4 @@ class LinkExternalObjectDecorator(object):
 					links.append(rendered)
 				except (TypeError, LocationError):
 					logger.error("Error rendering link %s", link)
-
 			obj[LINKS] = links
