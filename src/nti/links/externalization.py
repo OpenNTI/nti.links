@@ -27,11 +27,12 @@ from nti.dataserver_core.interfaces import IDataserver
 from nti.dataserver_core.interfaces import ILinkExternalHrefOnly
 from nti.dataserver_core.interfaces import IShouldHaveTraversablePath
 
-from nti.externalization.singleton import SingletonDecorator
 from nti.externalization.interfaces import StandardExternalFields
 from nti.externalization.interfaces import IExternalObjectDecorator
 from nti.externalization.interfaces import ILocatedExternalMapping
 from nti.externalization.interfaces import IInternalObjectExternalizer
+
+from nti.externalization.singleton import SingletonDecorator
 
 from nti.mimetype.mimetype import nti_mimetype_from_object
 

@@ -102,8 +102,8 @@ class Link(object):
 
 	def __eq__(self, other):
 		try:
-			return self is other or (self.rel == other.rel and \
-									 self.target == other.target and \
+			return self is other or (self.rel == other.rel and
+									 self.target == other.target and
 									 self.elements == other.elements)
 		except AttributeError:
 			return NotImplemented
