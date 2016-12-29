@@ -21,11 +21,11 @@ from zope.location.interfaces import LocationError
 from zope.traversing.interfaces import TraversalError
 
 from nti.coremetadata.interfaces import ICreated
+from nti.coremetadata.interfaces import IDataserver
+from nti.coremetadata.interfaces import IShouldHaveTraversablePath
 
 from nti.dataserver_core.interfaces import ILink
-from nti.dataserver_core.interfaces import IDataserver
 from nti.dataserver_core.interfaces import ILinkExternalHrefOnly
-from nti.dataserver_core.interfaces import IShouldHaveTraversablePath
 
 from nti.externalization.interfaces import StandardExternalFields
 from nti.externalization.interfaces import IExternalObjectDecorator
