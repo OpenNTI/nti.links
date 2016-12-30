@@ -44,17 +44,11 @@ setup(
 		'six',
 		'zope.component',
 		'zope.interface',
-		'zope.location',
 		'zope.mimetype',
-		'zope.traversing',
 		'zope.schema',
-		'nti.coremetadata',
-		'nti.dataserver_core',
+		'zope.security',
 		'nti.externalization',
-		'nti.mimetype',
-		'nti.ntiids',
-		'nti.schema',
-		'nti.traversal'
+		'nti.schema'
 	],
 	extras_require={
 		'test': TESTS_REQUIRE,
