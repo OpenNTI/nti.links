@@ -9,10 +9,5 @@
 	<include package="zope.security" file="meta.zcml" />
 	<include package="zope.component" />
 	<include package="zope.security" />
-		
-	<!--
-		<adapter factory=".links.NoOpLinkExternalObjectAdapter"
-				 name="wsgi" />
-	-->	 
 
 </configure>

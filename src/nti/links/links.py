@@ -14,15 +14,10 @@ logger = __import__('logging').getLogger(__name__)
 import six
 from functools import total_ordering
 
-from zope import component
 from zope import interface
-
-from nti.externalization.persistence import NoPickle
-from nti.externalization.interfaces import IExternalObject
 
 from nti.links.interfaces import ILink
 
-@NoPickle
 @total_ordering
 @interface.implementer(ILink)
 class Link(object):
@@ -49,8 +44,8 @@ class Link(object):
 		"""
 		:param target: The destination object for this link. Required to be
 			non-``None``. The exact value of what is accepted depends on
-			the externalization process (see :mod:`nti.dataserver.links_external`),
-			but is typically a persistent object, a URL, or an NTIID.
+			the externalization process, but is typically a persistent object, 
+			a URL, or an NTIID.
 		:keyword elements: Additional path components that should be added
 			after the target when a URL is generated
 		:keyword target_mime_type: If known and given, the mime type that
@@ -120,18 +115,8 @@ class Link(object):
 		except AttributeError:
 			return NotImplemented
 
-@component.adapter(Link)
-@interface.implementer(IExternalObject)
-class NoOpLinkExternalObjectAdapter(object):
-	"""
-	Implementation of :class:`interfaces.IExternalObject` for
-	the concrete :class:`Link`. It's intended use is for
-	contexts that do not yet understand links (e.g, deprecated code).
-	That is why it is so specific.
-	"""
+	def __reduce_ex__(self, protocol):
+		raise TypeError("Not allowed to pickle")
 
-	def __init__(self, link):
-		pass
-
-	def toExternalObject(self):
-		return None
+	def __reduce__(self):
+		return self.__reduce_ex__(0)
