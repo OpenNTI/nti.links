@@ -10,5 +10,3 @@ __docformat__ = "restructuredtext en"
 logger = __import__('logging').getLogger(__name__)
 
 from nti.links.links import Link
-
-from nti.links.externalization import render_link

@@ -228,3 +228,19 @@ class LinkExternalObjectDecorator(object):
 				except (TypeError, LocationError):
 					logger.error("Error rendering link %s", link)
 			obj[LINKS] = links
+
+@component.adapter(Link)
+@interface.implementer(IExternalObject)
+class NoOpLinkExternalObjectAdapter(object):
+	"""
+	Implementation of :class:`interfaces.IExternalObject` for
+	the concrete :class:`Link`. It's intended use is for
+	contexts that do not yet understand links (e.g, deprecated code).
+	That is why it is so specific.
+	"""
+
+	def __init__(self, link):
+		pass
+
+	def toExternalObject(self):
+		return None
