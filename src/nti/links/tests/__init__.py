@@ -16,30 +16,32 @@ from nti.testing.layers import ConfiguringLayerMixin
 
 import zope.testing.cleanup
 
+
 class SharedConfiguringTestLayer(ZopeComponentLayer,
-								 GCLayerMixin,
-								 ConfiguringLayerMixin):
+                                 GCLayerMixin,
+                                 ConfiguringLayerMixin):
 
-	set_up_packages = ('nti.links',)
+    set_up_packages = ('nti.links',)
 
-	@classmethod
-	def setUp(cls):
-		cls.setUpPackages()
+    @classmethod
+    def setUp(cls):
+        cls.setUpPackages()
 
-	@classmethod
-	def tearDown(cls):
-		cls.tearDownPackages()
-		zope.testing.cleanup.cleanUp()
+    @classmethod
+    def tearDown(cls):
+        cls.tearDownPackages()
+        zope.testing.cleanup.cleanUp()
 
-	@classmethod
-	def testSetUp(cls):
-		pass
+    @classmethod
+    def testSetUp(cls):
+        pass
 
-	@classmethod
-	def testTearDown(cls):
-		pass
+    @classmethod
+    def testTearDown(cls):
+        pass
 
 import unittest
 
+
 class LinksTestCase(unittest.TestCase):
-	layer = SharedConfiguringTestLayer
+    layer = SharedConfiguringTestLayer

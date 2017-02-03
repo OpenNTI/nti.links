@@ -19,6 +19,7 @@ from nti.schema.field import ValidTextLine
 from nti.schema.field import ValidChoice as Choice
 from nti.schema.field import DecodingValidTextLine
 
+
 class ILink(interface.Interface):
     """
     A relationship between the containing entity and
@@ -26,9 +27,9 @@ class ILink(interface.Interface):
     """
 
     rel = Choice(
-        title=u'The type of relationship',
-        values=('related', 'alternate', 'self', 'enclosure', 'edit', 'like',
-                'unlike', 'content'))
+            title=u'The type of relationship',
+            values=('related', 'alternate', 'self', 'enclosure', 'edit', 'like',
+                    'unlike', 'content'))
 
     target = interface.Attribute(
         """
@@ -41,7 +42,6 @@ class ILink(interface.Interface):
     elements = Iterable(
         title="Additional path segments to put after the `target`",
         description="""Each element must be a string and will be a new URL segment.
-
         This is useful for things like view names or namespace traversals.""")
 
     target_mime_type = DecodingValidTextLine(
@@ -59,12 +59,14 @@ class ILink(interface.Interface):
         title="Human readable title",
         required=False)
 
+
 class ILinkExternalHrefOnly(ILink):
     """
     A marker interface intended to be used when a link
     object should be externalized as its 'href' value only and
     not the wrapping object.
     """
+
 
 class ILinked(interface.Interface):
     """
