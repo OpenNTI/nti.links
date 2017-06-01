@@ -4,7 +4,7 @@
 .. $Id$
 """
 
-from __future__ import print_function, unicode_literals, absolute_import, division
+from __future__ import print_function, absolute_import, division
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
@@ -26,10 +26,9 @@ class ILink(interface.Interface):
     some other entity.
     """
 
-    rel = Choice(
-            title=u'The type of relationship',
-            values=('related', 'alternate', 'self', 'enclosure', 'edit', 'like',
-                    'unlike', 'content'))
+    rel = Choice(title=u'The type of relationship',
+                 values=(u'related', u'alternate', u'self', u'enclosure', u'edit',
+                         u'like', u'unlike', u'content'))
 
     target = interface.Attribute(
         """
@@ -39,25 +38,23 @@ class ILink(interface.Interface):
         will be interpreted as an absolute or relative URI.
         """)
 
-    elements = Iterable(
-        title="Additional path segments to put after the `target`",
-        description="""Each element must be a string and will be a new URL segment.
-        This is useful for things like view names or namespace traversals.""")
+    elements = Iterable(title=u"Additional path segments to put after the `target`",
+                        description=u"Each element must be a string and will be a new URL segment. "
+                        u"This is useful for things like view names or namespace traversals.")
 
     target_mime_type = DecodingValidTextLine(
-        title='Target Mime Type',
-        description="The mime type explicitly specified for the target object, if any",
+        title=u'Target Mime Type',
+        description=u"The mime type explicitly specified for the target object, if any",
         constraint=mimeTypeConstraint,
         required=False)
 
     method = DecodingValidTextLine(
-        title='HTTP Method',
-        description="The HTTP method most suited for this link relation",
+        title=u'HTTP Method',
+        description=u"The HTTP method most suited for this link relation",
         required=False)
 
-    title = ValidTextLine(
-        title="Human readable title",
-        required=False)
+    title = ValidTextLine(title=u"Human readable title",
+                          required=False)
 
 
 class ILinkExternalHrefOnly(ILink):
@@ -72,5 +69,4 @@ class ILinked(interface.Interface):
     """
     Something that possess links to other objects.
     """
-    links = Iterable(
-        title=u'Iterator over the ILinks this object contains.')
+    links = Iterable(title=u'Iterator over the ILinks this object contains.')

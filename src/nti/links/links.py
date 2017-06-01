@@ -36,7 +36,7 @@ class Link(object):
 
     def __init__(self,
                  target,
-                 rel='alternate',
+                 rel=u'alternate',
                  elements=(),
                  target_mime_type=None,
                  method=None,
