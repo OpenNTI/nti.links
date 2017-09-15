@@ -6,7 +6,7 @@ Implementation of the link data type.
 .. $Id$
 """
 
-from __future__ import print_function, unicode_literals, absolute_import, division
+from __future__ import print_function, absolute_import, division
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
@@ -27,11 +27,12 @@ class Link(object):
     These are non-persistent and should be generated at runtime.
     """
     mime_type = 'application/vnd.nextthought.link'
+
+    title = None
+    method = None
+    params = None
     elements = ()
     target_mime_type = None
-    method = None
-    title = None
-    params = None
     ignore_properties_of_target = False
 
     def __init__(self,

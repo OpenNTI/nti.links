@@ -1,0 +1,5 @@
+-e git+https://github.com/NextThought/nti.base.git@master#egg=nti.base
+-e git+https://github.com/NextThought/nti.ntiids.git@master#egg=nti.ntiids
+-e svn+https://repos.nextthought.com/svn/nti-svn/nti.mimetype/trunk#egg=nti.mimetype
+-e svn+https://repos.nextthought.com/svn/nti-svn/nti.mimetype/trunk#egg=nti.traversal
+-e svn+https://repos.nextthought.com/svn/nti-svn/nti.coremetadata/trunk#egg=nti.coremetadata

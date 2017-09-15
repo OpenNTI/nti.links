@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function, unicode_literals, absolute_import, division
+from __future__ import print_function, absolute_import, division
 __docformat__ = "restructuredtext en"
 
 # disable: accessing protected members, too many methods
@@ -9,7 +9,6 @@ __docformat__ = "restructuredtext en"
 
 from zope import component
 
-from nti.testing.layers import find_test
 from nti.testing.layers import GCLayerMixin
 from nti.testing.layers import ZopeComponentLayer
 from nti.testing.layers import ConfiguringLayerMixin
@@ -21,7 +20,7 @@ class SharedConfiguringTestLayer(ZopeComponentLayer,
                                  GCLayerMixin,
                                  ConfiguringLayerMixin):
 
-    set_up_packages = ('nti.links',)
+    set_up_packages = ('nti.externalization', 'nti.ntiids', 'nti.links',)
 
     @classmethod
     def setUp(cls):
@@ -40,8 +39,10 @@ class SharedConfiguringTestLayer(ZopeComponentLayer,
     def testTearDown(cls):
         pass
 
+
 import unittest
 
 
 class LinksTestCase(unittest.TestCase):
+
     layer = SharedConfiguringTestLayer

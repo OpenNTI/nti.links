@@ -4,7 +4,7 @@
 .. $Id$
 """
 
-from __future__ import print_function, unicode_literals, absolute_import, division
+from __future__ import print_function, absolute_import, division
 __docformat__ = "restructuredtext en"
 
 logger = __import__('logging').getLogger(__name__)
@@ -96,7 +96,7 @@ def render_link(link, nearest_site=None):
 
     href = None
     ntiid = getattr(target, 'ntiid', None) \
-        or getattr(target, 'NTIID', None)
+         or getattr(target, 'NTIID', None)
     if ntiid:
         ntiid_derived_from_target = True
     elif isinstance(target, six.string_types) and is_valid_ntiid_string(target):
@@ -126,8 +126,8 @@ def render_link(link, nearest_site=None):
             try:
                 ds_root = component.getUtility(IDataserver).root
             except LookupError:
-                logger.warn(
-                    "No dataserver found, you must have provided a site. Only in test cases")
+                msg = "No dataserver found, you must have provided a site. Only in test cases"
+                logger.warn(msg)
                 ds_root = nearest_site
             root = _root_for_ntiid_link(link, ds_root)
 
@@ -151,7 +151,6 @@ def render_link(link, nearest_site=None):
     # Join any additional path segments that were requested
     if link.elements:
         href = href + ('/' if not href.endswith('/') else '') + '/'.join(link.elements)
-        # TODO: quoting
     if link.params:
         href = href + '?%s' % urllib.urlencode(link.params)
 
@@ -165,7 +164,7 @@ def render_link(link, nearest_site=None):
         if link.method and link.target_mime_type:
             result['type'] = content_type
         elif not link.method:
-            if  not link.ignore_properties_of_target \
+            if      not link.ignore_properties_of_target \
                 and not content_type_derived_from_target:
                 result['type'] = content_type
 
@@ -179,7 +178,7 @@ def render_link(link, nearest_site=None):
     if link.title:
         result['title'] = link.title
 
-    if  not is_valid_resource_path(href) \
+    if      not is_valid_resource_path(href) \
         and not is_valid_ntiid_string(href):  # pragma: no cover
         # This shouldn't be possible anymore.
         __traceback_info__ = href, link, target, nearest_site
@@ -203,8 +202,9 @@ class LinkExternal(object):
     def __init__(self, context):
         self.context = context
 
-    def toExternalObject(self, **kwargs):
+    def toExternalObject(self, **unused_kwargs):
         return render_link(self.context)
+
 
 _MutableMapping = collections.MutableMapping
 _MutableSequence = collections.MutableSequence
@@ -224,7 +224,7 @@ class LinkExternalObjectDecorator(object):
     """
     __metaclass__ = SingletonDecorator
 
-    def decorateExternalObject(self, context, obj):
+    def decorateExternalObject(self, unused_context, obj):
         if isinstance(obj, _MutableSequence):
             for i, x in enumerate(obj):
                 if ILink_providedBy(x):
@@ -234,7 +234,10 @@ class LinkExternalObjectDecorator(object):
             for link in obj[LINKS]:
                 __traceback_info__ = link
                 try:
-                    rendered = render_link(link) if ILink_providedBy(link) else link
+                    if ILink_providedBy(link):
+                        rendered = render_link(link)
+                    else:
+                        rendered = link
                     links.append(rendered)
                 except (TypeError, LocationError):
                     logger.error("Error rendering link %s", link)
@@ -254,5 +257,5 @@ class NoOpLinkExternalObjectAdapter(object):
     def __init__(self, link):
         pass
 
-    def toExternalObject(self):
+    def toExternalObject(self, **unused_kwargs):
         return None

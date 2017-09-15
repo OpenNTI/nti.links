@@ -10,15 +10,6 @@
 	<include package="zope.component" />
 	<include package="zope.security" />
 
-	<!--
-	It breaks fewer test cases to let these pass right on through with
-	the LinkNonExternalizableReplacer...they like to get the .target
-	and .rel attributes. So we count on fixing things up with the
-	LinkExternalObjectDecorator registered next
-	
-	<adapter factory=".externalization.LinkExternal" />
-	-->
-
 	<subscriber factory=".externalization.LinkExternalObjectDecorator"
 				provides="nti.externalization.interfaces.IExternalObjectDecorator" />
 
@@ -28,8 +19,4 @@
 	<adapter factory=".externalization.LinkExternal"
 			 name="second-pass" />
 
-	<!--
-		<adapter factory=".externalization.NoOpLinkExternalObjectAdapter"
-				 name="wsgi" />
-	-->
 </configure>

@@ -16,7 +16,6 @@ from zope.mimetype.interfaces import mimeTypeConstraint
 from zope.schema import Iterable
 
 from nti.schema.field import ValidTextLine
-from nti.schema.field import ValidChoice as Choice
 from nti.schema.field import DecodingValidTextLine
 
 
@@ -26,9 +25,8 @@ class ILink(interface.Interface):
     some other entity.
     """
 
-    rel = Choice(title=u'The type of relationship',
-                 values=(u'related', u'alternate', u'self', u'enclosure', u'edit',
-                         u'like', u'unlike', u'content'))
+    rel = DecodingValidTextLine(title=u"The type of relationship",
+                                required=True)
 
     target = interface.Attribute(
         """
