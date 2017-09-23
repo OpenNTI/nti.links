@@ -6,10 +6,9 @@ Implementation of the link data type.
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 import six
 from functools import total_ordering
@@ -17,6 +16,8 @@ from functools import total_ordering
 from zope import interface
 
 from nti.links.interfaces import ILink
+
+logger = __import__('logging').getLogger(__name__)
 
 
 @total_ordering

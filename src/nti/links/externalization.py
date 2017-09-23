@@ -4,10 +4,9 @@
 .. $Id$
 """
 
-from __future__ import print_function, absolute_import, division
-__docformat__ = "restructuredtext en"
-
-logger = __import__('logging').getLogger(__name__)
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 import six
 import urllib
@@ -46,6 +45,8 @@ from nti.ntiids.ntiids import is_valid_ntiid_string
 
 from nti.traversal.traversal import normal_resource_path
 from nti.traversal.traversal import is_valid_resource_path
+
+logger = __import__('logging').getLogger(__name__)
 
 
 def _root_for_ntiid_link(link, nearest_site):
