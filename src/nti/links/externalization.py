@@ -9,8 +9,8 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import six
-import urllib
 import collections
+from six.moves import urllib_parse
 
 from zope import component
 from zope import interface
@@ -24,18 +24,15 @@ from nti.base.interfaces import ICreated
 from nti.coremetadata.interfaces import IDataserver
 from nti.coremetadata.interfaces import IShouldHaveTraversablePath
 
-from nti.externalization.interfaces import IExternalObject
 from nti.externalization.interfaces import StandardExternalFields
 from nti.externalization.interfaces import ILocatedExternalMapping
 from nti.externalization.interfaces import IExternalObjectDecorator
 from nti.externalization.interfaces import IInternalObjectExternalizer
 
-from nti.externalization.singleton import SingletonDecorator
+from nti.externalization.singleton import SingletonMetaclass
 
 from nti.links.interfaces import ILink
 from nti.links.interfaces import ILinkExternalHrefOnly
-
-from nti.links.links import Link
 
 from nti.mimetype.mimetype import nti_mimetype_from_object
 
@@ -49,7 +46,7 @@ from nti.traversal.traversal import is_valid_resource_path
 logger = __import__('logging').getLogger(__name__)
 
 
-def _root_for_ntiid_link(link, nearest_site):
+def _root_for_ntiid_link(link, nearest_site=None):
     # Place the NTIID reference under the most specific place possible: the owner,
     # if in belongs to someone, otherwise the global Site
     root = None
@@ -133,9 +130,9 @@ def render_link(link, nearest_site=None):
             root = _root_for_ntiid_link(link, ds_root)
 
             if is_ntiid_of_type(ntiid, TYPE_OID):
-                href = root + '/Objects/' + urllib.quote(ntiid)
+                href = root + '/Objects/' + urllib_parse.quote(ntiid)
             else:
-                href = root + '/NTIIDs/' + urllib.quote(ntiid)
+                href = root + '/NTIIDs/' + urllib_parse.quote(ntiid)
 
     elif is_valid_resource_path(target):
         href = target
@@ -153,7 +150,7 @@ def render_link(link, nearest_site=None):
     if link.elements:
         href = href + ('/' if not href.endswith('/') else '') + '/'.join(link.elements)
     if link.params:
-        href = href + '?%s' % urllib.urlencode(link.params)
+        href = href + '?%s' % urllib_parse.urlencode(link.params)
 
     result = component.getMultiAdapter((), ILocatedExternalMapping)
     result.update({StandardExternalFields.CLASS: 'Link',
@@ -193,8 +190,8 @@ def render_link(link, nearest_site=None):
     return result
 
 
-@interface.implementer(IInternalObjectExternalizer)
 @component.adapter(ILink)
+@interface.implementer(IInternalObjectExternalizer)
 class LinkExternal(object):
     """
     See :func:`render_link`
@@ -216,14 +213,17 @@ ILinkExternalHrefOnly_providedBy = ILinkExternalHrefOnly.providedBy
 LINKS = StandardExternalFields.LINKS
 
 
-@interface.implementer(IExternalObjectDecorator)
 @component.adapter(object)
+@interface.implementer(IExternalObjectDecorator)
 class LinkExternalObjectDecorator(object):
     """
     An object decorator which (comes after the mapping decorators)
     to clean up any links that are added by decorators that didn't get rendered.
     """
-    __metaclass__ = SingletonDecorator
+    __metaclass__ = SingletonMetaclass
+
+    def __init__(self, *args):
+        pass
 
     def decorateExternalObject(self, unused_context, obj):
         if isinstance(obj, _MutableSequence):
@@ -243,20 +243,3 @@ class LinkExternalObjectDecorator(object):
                 except (TypeError, LocationError):
                     logger.error("Error rendering link %s", link)
             obj[LINKS] = links
-
-
-@component.adapter(Link)
-@interface.implementer(IExternalObject)
-class NoOpLinkExternalObjectAdapter(object):
-    """
-    Implementation of :class:`interfaces.IExternalObject` for
-    the concrete :class:`Link`. It's intended use is for
-    contexts that do not yet understand links (e.g, deprecated code).
-    That is why it is so specific.
-    """
-
-    def __init__(self, link):
-        pass
-
-    def toExternalObject(self, **unused_kwargs):
-        return None
