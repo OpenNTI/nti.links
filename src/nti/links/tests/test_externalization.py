@@ -35,15 +35,15 @@ from nti.links.tests import LinksTestCase
 
 
 class TestExternalization(LinksTestCase):
-    
+
     def test_link_external(self):
         href = "https://www.google.com"
         link = Link(href, rel='google', method='GET', elements=('mail',),
-                    params=({'app':'42'}))
+                    params=({'app': '42'}))
         result = to_external_object(link, name='second-pass')
-        assert_that(result, 
+        assert_that(result,
                     has_entries('Class', 'Link',
-                                'method', 'GET', 
+                                'method', 'GET',
                                 'rel', 'google',
                                 'href', 'https://www.google.com/mail?app=42'))
 
@@ -53,7 +53,7 @@ class TestExternalization(LinksTestCase):
         link = Link("https://www.google.com")
         result = _root_for_ntiid_link(link)
         assert_that(result, is_('/dataserver2'))
-        
+
         @interface.implementer(ICreated)
         class Bleach(object):
             creator = 'tite.kubo'
@@ -66,64 +66,78 @@ class TestExternalization(LinksTestCase):
         interface.alsoProvides(link, ICreated)
         result = _root_for_ntiid_link(link)
         assert_that(result, is_('/dataserver2'))
-        
+
         with self.assertRaises(TypeError):
             mock_rp.is_callable().with_args().raises(TypeError())
             _root_for_ntiid_link(link)
-                     
+
     @fudge.patch('nti.links.externalization._root_for_ntiid_link')
     def test_render_link_one(self, mock_root):
         mock_root.is_callable().with_args().returns('/dataserver2')
+
         class Bleach(object):
             mimeType = 'application/vnd.nextthought.bleach'
             ntiid = 'tag:nextthought.com,2011-10:BLEACH-NTIVideo-Ichigo.vs.Aizen'
-        
+
         target = Bleach()
         link = Link(target, rel='bleach', method='GET',
                     title='Ichigo.vs.Aizen')
         result = render_link(link)
-        assert_that(result, 
+        assert_that(result,
                     has_entries('Class', 'Link',
-                                'method', 'GET', 
-                                'rel', 'bleach', 
+                                'method', 'GET',
+                                'rel', 'bleach',
                                 'title', 'Ichigo.vs.Aizen',
                                 'ntiid', 'tag:nextthought.com,2011-10:BLEACH-NTIVideo-Ichigo.vs.Aizen',
                                 'href', '/dataserver2/NTIIDs/tag%3Anextthought.com%2C2011-10%3ABLEACH-NTIVideo-Ichigo.vs.Aizen'))
 
         interface.alsoProvides(link, ILinkExternalHrefOnly)
         result = render_link(link)
-        assert_that(result, 
+        assert_that(result,
                     is_('/dataserver2/NTIIDs/tag%3Anextthought.com%2C2011-10%3ABLEACH-NTIVideo-Ichigo.vs.Aizen'))
 
     @fudge.patch('nti.links.externalization.normal_resource_path')
     def test_render_link_two(self, mock_rp):
         mock_rp.is_callable().with_args().returns('https://bleach.org/ichigo.gif')
+
         class Bleach(object):
             pass
-        
+
         target = Bleach()
         link = Link(target, rel='ichigo', target_mime_type='image/gif')
         result = render_link(link)
-        assert_that(result, 
+        assert_that(result,
                     has_entries('Class', 'Link',
-                                'rel', 'ichigo', 
+                                'rel', 'ichigo',
                                 'href', 'https://bleach.org/ichigo.gif'))
 
     @fudge.patch('nti.links.externalization.normal_resource_path')
     def test_render_link_three(self, mock_rp):
         mock_rp.is_callable().with_args().returns('https://bleach.org')
-        link = Link('tag:nextthought.com,2011-10:BLEACH-OID-Ichigo.vs.Aizen', 
+        link = Link('tag:nextthought.com,2011-10:BLEACH-OID-Ichigo.vs.Aizen',
                     rel='bleach', method='GET',
                     title='Ichigo.vs.Aizen')
         interface.alsoProvides(link, ILinkExternalHrefOnly)
         result = render_link(link)
-        assert_that(result, 
+        assert_that(result,
                     is_('https://bleach.org/Objects/tag%3Anextthought.com%2C2011-10%3ABLEACH-OID-Ichigo.vs.Aizen'))
-        
+
     def test_decorator(self):
         link = Link("https://www.google.com", rel='google', method='GET',
                     elements=('mail',),
                     ignore_properties_of_target=True)
         decorator = LinkExternalObjectDecorator()
         decorator.decorateExternalObject(None, [link])
-        decorator.decorateExternalObject(None, {'Links':[link, 'https://www.amazon.com']})
+        decorator.decorateExternalObject(
+            None, {'Links': [link, 'https://www.amazon.com']})
+
+    @fudge.patch('nti.links.externalization.render_link')
+    def test_type_error(self, mock_rl):
+        link = Link("https://www.google.com", rel='google', method='GET',
+                    elements=('mail',),
+                    ignore_properties_of_target=True)
+        mock_rl.is_callable().with_args().raises(TypeError())
+        links = {'Links': [link]}
+        decorator = LinkExternalObjectDecorator()
+        decorator.decorateExternalObject(None, links)
+        assert_that(links, has_entries('Links', []))
