@@ -9,6 +9,7 @@ from __future__ import absolute_import
 # pylint: disable=W0212,R0904
 
 from hamcrest import is_
+from hamcrest import none
 from hamcrest import is_not
 from hamcrest import equal_to
 from hamcrest import not_none
@@ -54,8 +55,16 @@ class TestLinks(unittest.TestCase):
         assert_that(link, greater_than(link3))
         assert_that(hash(Link(object(), rel='foo')), is_(not_none()))
         
+        assert_that(link, is_not(equal_to(none())))
+        
+        obj = object()
+        for func in (Link.__gt__, Link.__lt__):
+            assert_that(func(link, obj), is_(NotImplemented))
+        
     def test_pickle(self):
         href = "https://www.google.com"
         link = Link(href, rel='google', method='GET')
         with self.assertRaises(TypeError):
             pickle.dumps(link)
+        with self.assertRaises(TypeError):
+            link.__reduce__()

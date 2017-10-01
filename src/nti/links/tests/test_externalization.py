@@ -66,6 +66,10 @@ class TestExternalization(LinksTestCase):
         interface.alsoProvides(link, ICreated)
         result = _root_for_ntiid_link(link)
         assert_that(result, is_('/dataserver2'))
+        
+        with self.assertRaises(TypeError):
+            mock_rp.is_callable().with_args().raises(TypeError())
+            _root_for_ntiid_link(link)
                      
     @fudge.patch('nti.links.externalization._root_for_ntiid_link')
     def test_render_link_one(self, mock_root):
