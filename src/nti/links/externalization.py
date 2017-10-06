@@ -54,7 +54,7 @@ def _root_for_ntiid_link(link, nearest_site=None):
     if ICreated.providedBy(target) and target.creator:
         try:
             root = normal_resource_path(target.creator)
-        except TypeError:
+        except TypeError:  # pragma: no cover
             pass
     if root is None and ICreated.providedBy(link) and link.creator:
         try:
@@ -148,7 +148,8 @@ def render_link(link, nearest_site=None):
 
     # Join any additional path segments that were requested
     if link.elements:
-        href = href + ('/' if not href.endswith('/') else '') + '/'.join(link.elements)
+        href = href + ('/' if not href.endswith('/') else '')
+        href += '/'.join(link.elements)
     if link.params:
         href = href + '?%s' % urllib_parse.urlencode(link.params)
 
@@ -213,6 +214,7 @@ ILinkExternalHrefOnly_providedBy = ILinkExternalHrefOnly.providedBy
 LINKS = StandardExternalFields.LINKS
 
 
+@six.add_metaclass(SingletonMetaclass)
 @component.adapter(object)
 @interface.implementer(IExternalObjectDecorator)
 class LinkExternalObjectDecorator(object):
@@ -220,10 +222,9 @@ class LinkExternalObjectDecorator(object):
     An object decorator which (comes after the mapping decorators)
     to clean up any links that are added by decorators that didn't get rendered.
     """
-    __metaclass__ = SingletonMetaclass
 
     def __init__(self, *args):
-        pass
+        pass  # pragma: no cover
 
     def decorateExternalObject(self, unused_context, obj):
         if isinstance(obj, _MutableSequence):
