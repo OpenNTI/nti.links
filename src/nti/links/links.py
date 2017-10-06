@@ -106,19 +106,19 @@ class Link(object):
             return self is other or (self.rel == other.rel and
                                      self.target == other.target and
                                      self.elements == other.elements)
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             return NotImplemented
 
     def __lt__(self, other):
         try:
             return (self.rel, self.target, self.elements) < (other.rel, other.target, other.elements)
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             return NotImplemented
 
     def __gt__(self, other):
         try:
             return (self.rel, self.target, self.elements) > (other.rel, other.target, other.elements)
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             return NotImplemented
 
     def __reduce_ex__(self, protocol):

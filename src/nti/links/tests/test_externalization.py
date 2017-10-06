@@ -110,6 +110,12 @@ class TestExternalization(LinksTestCase):
                     has_entries('Class', 'Link',
                                 'rel', 'ichigo',
                                 'href', 'https://bleach.org/ichigo.gif'))
+        
+        link = Link(target, rel='ichigo', method='GET', target_mime_type='image/gif')
+        result = render_link(link)
+        assert_that(result,
+                    has_entries('method', 'GET',
+                                'type', 'image/gif'))
 
     @fudge.patch('nti.links.externalization.normal_resource_path')
     def test_render_link_three(self, mock_rp):
@@ -128,8 +134,8 @@ class TestExternalization(LinksTestCase):
                     ignore_properties_of_target=True)
         decorator = LinkExternalObjectDecorator()
         decorator.decorateExternalObject(None, [link])
-        decorator.decorateExternalObject(
-            None, {'Links': [link, 'https://www.amazon.com']})
+        decorator.decorateExternalObject(None, 
+                                         {'Links': [link, 'https://www.amazon.com']})
 
     @fudge.patch('nti.links.externalization.render_link')
     def test_type_error(self, mock_rl):
