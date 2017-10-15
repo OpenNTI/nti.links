@@ -8,8 +8,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 
-import six
 import collections
+from six import string_types
 from six.moves import urllib_parse
 
 from zope import component
@@ -29,7 +29,7 @@ from nti.externalization.interfaces import ILocatedExternalMapping
 from nti.externalization.interfaces import IExternalObjectDecorator
 from nti.externalization.interfaces import IInternalObjectExternalizer
 
-from nti.externalization.singleton import SingletonMetaclass
+from nti.externalization.singleton import Singleton
 
 from nti.links.interfaces import ILink
 from nti.links.interfaces import ILinkExternalHrefOnly
@@ -97,7 +97,7 @@ def render_link(link, nearest_site=None):
          or getattr(target, 'NTIID', None)
     if ntiid:
         ntiid_derived_from_target = True
-    elif isinstance(target, six.string_types) and is_valid_ntiid_string(target):
+    elif isinstance(target, string_types) and is_valid_ntiid_string(target):
         ntiid = target
         ntiid_derived_from_target = False  # it *is* the target
 
@@ -214,17 +214,13 @@ ILinkExternalHrefOnly_providedBy = ILinkExternalHrefOnly.providedBy
 LINKS = StandardExternalFields.LINKS
 
 
-@six.add_metaclass(SingletonMetaclass)
 @component.adapter(object)
 @interface.implementer(IExternalObjectDecorator)
-class LinkExternalObjectDecorator(object):
+class LinkExternalObjectDecorator(Singleton):
     """
     An object decorator which (comes after the mapping decorators)
     to clean up any links that are added by decorators that didn't get rendered.
     """
-
-    def __init__(self, *args):
-        pass  # pragma: no cover
 
     def decorateExternalObject(self, unused_context, obj):
         if isinstance(obj, _MutableSequence):
