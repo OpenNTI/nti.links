@@ -81,6 +81,7 @@ def render_link(link, nearest_site=None):
     :param nearest_site: Currently unused.
     :type link: :class:`nti_interfaces.ILink`
     """
+    # pylint: disable=unused-variable
     __traceback_info__ = link, nearest_site
 
     target = link.target
@@ -109,8 +110,8 @@ def render_link(link, nearest_site=None):
         # We're using ntiid as a backdoor for arbitrary strings.
         # But if it really is an NTIID, then direct it specially if
         # we can.
-        # FIXME: Hardcoded paths.
-        # TODO: Somewhere in the site there should be an object that represents each of these,
+        # Hardcoded paths.
+        # Somewhere in the site there should be an object that represents each of these,
         # and we should be able to find it, get a traversal path for it, and use it here.
         # That object should implement the lookup behaviour found currently in
         # ntiids.
@@ -119,7 +120,7 @@ def render_link(link, nearest_site=None):
             # the nearest site. But not all site objects support the Objects and
             # NTIIDs traversal. So the simplest thing to do is to use the root
             # site
-            # FIXME: This may not be quite correct for NTIIDs in the future?
+            # This may not be quite correct for NTIIDs in the future?
             # It should always be correct for OIDs though.
             try:
                 ds_root = component.getUtility(IDataserver).root
@@ -230,6 +231,7 @@ class LinkExternalObjectDecorator(Singleton):
         elif isinstance(obj, _MutableMapping) and obj.get(LINKS, ()):
             links = []
             for link in obj[LINKS]:
+                # pylint: disable=unused-variable
                 __traceback_info__ = link
                 try:
                     if ILink_providedBy(link):

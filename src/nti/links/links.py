@@ -66,6 +66,7 @@ class Link(object):
                 that would otherwise be derived from the ``target``, such as its
                 ntiid and mime type.
         """
+        # pylint: disable=unused-variable
         __traceback_info__ = target, rel, elements, target_mime_type
         # If the target is None, it won't externalize correctly,
         # which is a very hard error to diagnose the cause of--it was far away.
