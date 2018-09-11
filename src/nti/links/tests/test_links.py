@@ -27,6 +27,7 @@ import unittest
 from nti.links.interfaces import ILink
 
 from nti.links.links import Link
+from nti.links.links import FramedLink
 
 
 class TestLinks(unittest.TestCase):
@@ -59,6 +60,16 @@ class TestLinks(unittest.TestCase):
         obj = object()
         for func in (Link.__gt__, Link.__lt__):
             assert_that(func(link, obj), is_(NotImplemented))
+
+        framed_link = FramedLink(href, 500, 500,
+                                 rel='google', method='GET', elements=('mail.txt',),
+                                 params={'app': '42'}, target_mime_type='text/plain',
+                                 title=u'Google', ignore_properties_of_target=True)
+        assert_that(framed_link, validly_provides(ILink))
+        assert_that(framed_link, verifiably_provides(ILink))
+        assert_that(framed_link.height, is_(500))
+        assert_that(framed_link.width, is_(500))
+        assert_that(framed_link.mime_type, is_(u'application/vnd.nextthought.framedlink'))
         
     def test_pickle(self):
         href = "https://www.google.com"
@@ -67,3 +78,9 @@ class TestLinks(unittest.TestCase):
             pickle.dumps(link)
         with self.assertRaises(TypeError):
             link.__reduce__()
+
+        framed_link = FramedLink(href, 500, 500, rel='google', method='GET')
+        with self.assertRaises(TypeError):
+            pickle.dumps(framed_link)
+        with self.assertRaises(TypeError):
+            framed_link.__reduce__()
