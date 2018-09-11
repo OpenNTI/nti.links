@@ -21,6 +21,7 @@ from nti.base.interfaces import ICreated
 
 from nti.externalization.externalization import to_external_object
 
+from nti.links.links import FramedLink
 from nti.links.links import Link
 
 from nti.links.externalization import render_link
@@ -45,6 +46,17 @@ class TestExternalization(LinksTestCase):
                                 'method', 'GET',
                                 'rel', 'google',
                                 'href', 'https://www.google.com/mail?app=42'))
+
+        framed_link = FramedLink(href, 500, 500, rel='google', method='GET', elements=('mail',),
+                                 params=({'app': '42'}))
+        result = to_external_object(framed_link, name='second-pass')
+        assert_that(result,
+                    has_entries('Class', 'Link',
+                                'method', 'GET',
+                                'rel', 'google',
+                                'href', 'https://www.google.com/mail?app=42',
+                                'height', 500,
+                                'width', 500))
 
     @fudge.patch('nti.links.externalization.normal_resource_path')
     def test_root_for_ntiid_link(self, mock_rp):

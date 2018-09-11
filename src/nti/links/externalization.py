@@ -31,6 +31,7 @@ from nti.externalization.interfaces import IInternalObjectExternalizer
 
 from nti.externalization.singleton import Singleton
 
+from nti.links.interfaces import IFramedLink
 from nti.links.interfaces import ILink
 from nti.links.interfaces import ILinkExternalHrefOnly
 
@@ -184,6 +185,10 @@ def render_link(link, nearest_site=None):
         __traceback_info__ = href, link, target, nearest_site
         raise TraversalError(href)
 
+    if IFramedLink_providedBy(link):
+        result['height'] = link.height
+        result['width'] = link.width
+
     if ILinkExternalHrefOnly_providedBy(link):
         # The marker that identifies the link should be replaced by just the href
         # Because of the decorator, it's easiest to just do this here
@@ -211,6 +216,7 @@ _MutableSequence = collections.MutableSequence
 
 ILink_providedBy = ILink.providedBy
 ILinkExternalHrefOnly_providedBy = ILinkExternalHrefOnly.providedBy
+IFramedLink_providedBy = IFramedLink.providedBy
 
 LINKS = StandardExternalFields.LINKS
 

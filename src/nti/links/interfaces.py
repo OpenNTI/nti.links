@@ -18,6 +18,7 @@ from zope.schema import Iterable
 
 from nti.schema.field import ValidTextLine
 from nti.schema.field import DecodingValidTextLine
+from nti.schema.field import Int
 
 
 class ILink(interface.Interface):
@@ -54,6 +55,18 @@ class ILink(interface.Interface):
 
     title = ValidTextLine(title=u"Human readable title",
                           required=False)
+
+
+class IFramedLink(ILink):
+    """
+    A link that is intended to be launched into an iframed destination
+    """
+
+    height = Int(title=u'The height of the iframe.',
+                 required=True)
+
+    width = Int(title=u'The width of the iframe.',
+                required=True)
 
 
 class ILinkExternalHrefOnly(ILink):

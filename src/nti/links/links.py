@@ -16,6 +16,7 @@ from functools import total_ordering
 from zope import interface
 
 from nti.links.interfaces import ILink
+from nti.links.interfaces import IFramedLink
 
 logger = __import__('logging').getLogger(__name__)
 
@@ -127,3 +128,32 @@ class Link(object):
 
     def __reduce__(self):
         return self.__reduce_ex__(0)
+
+
+@interface.implementer(IFramedLink)
+class FramedLink(Link):
+
+    mime_type = 'application/vnd.nextthought.framedlink'
+
+    def __init__(self,
+                 target,
+                 height,
+                 width,
+                 rel=u'alternate',
+                 elements=(),
+                 target_mime_type=None,
+                 method=None,
+                 title=None,
+                 params=None,
+                 ignore_properties_of_target=False
+                 ):
+        self.height = height
+        self.width = width
+        super(FramedLink, self).__init__(target,
+                                         rel=rel,
+                                         elements=elements,
+                                         target_mime_type=target_mime_type,
+                                         method=method,
+                                         title=title,
+                                         params=params,
+                                         ignore_properties_of_target=ignore_properties_of_target)
