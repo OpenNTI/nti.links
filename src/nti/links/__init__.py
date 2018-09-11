@@ -10,4 +10,5 @@ from __future__ import absolute_import
 
 from nti.links.externalization import render_link
 
+from nti.links.links import FramedLink
 from nti.links.links import Link
