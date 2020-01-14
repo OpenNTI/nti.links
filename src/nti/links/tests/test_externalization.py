@@ -15,6 +15,8 @@ does_not = is_not
 
 import fudge
 
+from fudge.inspector import arg
+
 from zope import interface
 
 from nti.base.interfaces import ICreated
@@ -126,32 +128,14 @@ class TestExternalization(LinksTestCase):
         assert_that(links, has_entries('Links', []))
 
 
-class _IShouldHaveTraversablePath(interface.Interface):
-    """
-    An interface to simulate IShouldHaveTraversablePath that
-    our test object wont have.
-    """
-    pass
-
-
 class TestLegacyIDLinks(LinksTestCase):
 
-    def setUp(self):
-        super(TestLegacyIDLinks, self).setUp()
-        self._oldiface = nti.links.externalization.IShouldHaveTraversablePath
-        nti.links.externalization.IShouldHaveTraversablePath = _IShouldHaveTraversablePath
-        nti.links.externalization.IDataserver = interface.Interface
-
-    def tearDown(self):
-        super(TestLegacyIDLinks, self).tearDown()
-        nti.links.externalization.IShouldHaveTraversablePath = self._oldiface
-        del nti.links.externalization.IDataserver
-        del self._oldiface
 
     @fudge.patch('nti.links.externalization._root_for_ntiid_link')
-    def test_ntiid_based_link(self, mock_root):
+    @fudge.patch('nti.links.externalization.IShouldHaveTraversablePath')
+    def test_ntiid_based_link(self, mock_root, iface):
         mock_root.is_callable().with_args().returns('/dataserver2')
-
+        
         class Bleach(object):
             mimeType = 'application/vnd.nextthought.bleach'
             ntiid = 'tag:nextthought.com,2011-10:BLEACH-NTIVideo-Ichigo.vs.Aizen'
@@ -159,6 +143,9 @@ class TestLegacyIDLinks(LinksTestCase):
         target = Bleach()
         link = Link(target, rel='bleach', method='GET',
                     title='Ichigo.vs.Aizen')
+
+        iface.provides('providedBy').with_args(target).returns(False)
+        
         result = render_link(link)
         assert_that(result,
                     has_entries('Class', 'Link',
