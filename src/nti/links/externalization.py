@@ -27,6 +27,7 @@ try:
     from nti.coremetadata.interfaces import IShouldHaveTraversablePath
 except ImportError:
     IShouldHaveTraversablePath = interface.Interface
+    IDataserver = None
 else:
     from nti.coremetadata.interfaces import IDataserver
 
@@ -137,7 +138,7 @@ def render_link(link, nearest_site=None):
             # It should always be correct for OIDs though.
             try:
                 ds_root = component.getUtility(IDataserver).root
-            except (LookupError, NameError):
+            except LookupError:
                 msg = "No dataserver found, you must have provided a site. Only in test cases"
                 logger.warn(msg)
                 ds_root = nearest_site
