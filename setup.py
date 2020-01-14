@@ -49,7 +49,6 @@ setup(
     install_requires=[
         'setuptools',
         'nti.base',
-        'nti.coremetadata',
         'nti.externalization',
         'nti.mimetype',
         'nti.ntiids',
@@ -71,6 +70,9 @@ setup(
             'repoze.sphinx.autointerface',
             'sphinx_rtd_theme',
         ],
+        'legacy' : [
+            'nti.coremetadata'
+        ]
     },
     entry_points=entry_points,
 )

@@ -21,6 +21,8 @@ from nti.base.interfaces import ICreated
 
 from nti.externalization.externalization import to_external_object
 
+import nti.links
+
 from nti.links.links import Link
 
 from nti.links.externalization import render_link
@@ -70,31 +72,6 @@ class TestExternalization(LinksTestCase):
             mock_rp.is_callable().with_args().raises(TypeError())
             _root_for_ntiid_link(link)
 
-    @fudge.patch('nti.links.externalization._root_for_ntiid_link')
-    def test_render_link_one(self, mock_root):
-        mock_root.is_callable().with_args().returns('/dataserver2')
-
-        class Bleach(object):
-            mimeType = 'application/vnd.nextthought.bleach'
-            ntiid = 'tag:nextthought.com,2011-10:BLEACH-NTIVideo-Ichigo.vs.Aizen'
-
-        target = Bleach()
-        link = Link(target, rel='bleach', method='GET',
-                    title='Ichigo.vs.Aizen')
-        result = render_link(link)
-        assert_that(result,
-                    has_entries('Class', 'Link',
-                                'method', 'GET',
-                                'rel', 'bleach',
-                                'title', 'Ichigo.vs.Aizen',
-                                'ntiid', 'tag:nextthought.com,2011-10:BLEACH-NTIVideo-Ichigo.vs.Aizen',
-                                'href', '/dataserver2/NTIIDs/tag%3Anextthought.com%2C2011-10%3ABLEACH-NTIVideo-Ichigo.vs.Aizen'))
-
-        interface.alsoProvides(link, ILinkExternalHrefOnly)
-        result = render_link(link)
-        assert_that(result,
-                    is_('/dataserver2/NTIIDs/tag%3Anextthought.com%2C2011-10%3ABLEACH-NTIVideo-Ichigo.vs.Aizen'))
-
     @fudge.patch('nti.links.externalization.normal_resource_path')
     def test_render_link_two(self, mock_rp):
         mock_rp.is_callable().with_args().returns('https://bleach.org/ichigo.gif')
@@ -118,14 +95,15 @@ class TestExternalization(LinksTestCase):
 
     @fudge.patch('nti.links.externalization.normal_resource_path')
     def test_render_link_three(self, mock_rp):
-        mock_rp.is_callable().with_args().returns('https://bleach.org')
-        link = Link('tag:nextthought.com,2011-10:BLEACH-OID-Ichigo.vs.Aizen',
+        target = object()
+        mock_rp.is_callable().with_args(target).returns('https://bleach.org/foo/bar/baz')
+        link = Link(target,
                     rel='bleach', method='GET',
                     title='Ichigo.vs.Aizen')
         interface.alsoProvides(link, ILinkExternalHrefOnly)
         result = render_link(link)
         assert_that(result,
-                    is_('https://bleach.org/Objects/tag%3Anextthought.com%2C2011-10%3ABLEACH-OID-Ichigo.vs.Aizen'))
+                    is_('https://bleach.org/foo/bar/baz'))
 
     def test_decorator(self):
         link = Link("https://www.google.com", rel='google', method='GET',
@@ -146,3 +124,51 @@ class TestExternalization(LinksTestCase):
         decorator = LinkExternalObjectDecorator()
         decorator.decorateExternalObject(None, links)
         assert_that(links, has_entries('Links', []))
+
+
+class _IShouldHaveTraversablePath(interface.Interface):
+    """
+    An interface to simulate IShouldHaveTraversablePath that
+    our test object wont have.
+    """
+    pass
+
+
+class TestLegacyIDLinks(LinksTestCase):
+
+    def setUp(self):
+        super(TestLegacyIDLinks, self).setUp()
+        self._oldiface = nti.links.externalization.IShouldHaveTraversablePath
+        nti.links.externalization.IShouldHaveTraversablePath = _IShouldHaveTraversablePath
+        nti.links.externalization.IDataserver = interface.Interface
+
+    def tearDown(self):
+        super(TestLegacyIDLinks, self).tearDown()
+        nti.links.externalization.IShouldHaveTraversablePath = self._oldiface
+        del nti.links.externalization.IDataserver
+        del self._oldiface
+
+    @fudge.patch('nti.links.externalization._root_for_ntiid_link')
+    def test_ntiid_based_link(self, mock_root):
+        mock_root.is_callable().with_args().returns('/dataserver2')
+
+        class Bleach(object):
+            mimeType = 'application/vnd.nextthought.bleach'
+            ntiid = 'tag:nextthought.com,2011-10:BLEACH-NTIVideo-Ichigo.vs.Aizen'
+
+        target = Bleach()
+        link = Link(target, rel='bleach', method='GET',
+                    title='Ichigo.vs.Aizen')
+        result = render_link(link)
+        assert_that(result,
+                    has_entries('Class', 'Link',
+                                'method', 'GET',
+                                'rel', 'bleach',
+                                'title', 'Ichigo.vs.Aizen',
+                                'ntiid', 'tag:nextthought.com,2011-10:BLEACH-NTIVideo-Ichigo.vs.Aizen',
+                                'href', '/dataserver2/NTIIDs/tag%3Anextthought.com%2C2011-10%3ABLEACH-NTIVideo-Ichigo.vs.Aizen'))
+
+        interface.alsoProvides(link, ILinkExternalHrefOnly)
+        result = render_link(link)
+        assert_that(result,
+                    is_('/dataserver2/NTIIDs/tag%3Anextthought.com%2C2011-10%3ABLEACH-NTIVideo-Ichigo.vs.Aizen'))
