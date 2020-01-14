@@ -2,5 +2,3 @@
 -e git+https://github.com/NextThought/nti.ntiids.git@master#egg=nti.ntiids
 -e git+https://github.com/NextThought/nti.mimetype.git@master#egg=nti.mimetype
 -e git+https://github.com/NextThought/nti.traversal.git@master#egg=nti.traversal
--e git+https://github.com/NextThought/nti.coremetadata.git@master#egg=nti.coremetadata
--e git+https://github.com/NextThought/nti.contenttypes.reports.git@master#egg=nti.contenttypes.reports

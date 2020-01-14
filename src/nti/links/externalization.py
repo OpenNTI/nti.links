@@ -21,8 +21,15 @@ from zope.traversing.interfaces import TraversalError
 
 from nti.base.interfaces import ICreated
 
-from nti.coremetadata.interfaces import IDataserver
-from nti.coremetadata.interfaces import IShouldHaveTraversablePath
+# See comment in render_link for an explanation of the handling of
+# IShouldHaveTraversablePath and the monkeying around that is happening here.
+try:
+    from nti.coremetadata.interfaces import IShouldHaveTraversablePath
+except ImportError:
+    IShouldHaveTraversablePath = interface.Interface
+    IDataserver = None
+else:
+    from nti.coremetadata.interfaces import IDataserver
 
 from nti.externalization.interfaces import StandardExternalFields
 from nti.externalization.interfaces import ILocatedExternalMapping
@@ -115,6 +122,13 @@ def render_link(link, nearest_site=None):
         # and we should be able to find it, get a traversal path for it, and use it here.
         # That object should implement the lookup behaviour found currently in
         # ntiids.
+        #
+        # 1/2020 This is a legacy code path, in general objects should be traversable and
+        # be referenced by their normal resource path. In some systems many objects had no
+        # traversable paths and instead we generated ntiid based links for those objects.
+        # This legacy behaviour is activated by the installation of the `legacy` extras, specifically
+        # the inclusion of IShouldHaveTraversablePath from nti.coremetadata.
+        # https://github.com/NextThought/nti.links/issues/2
         if is_valid_ntiid_string(ntiid):
             # In the past, if the link was not ICreated, the root would become
             # the nearest site. But not all site objects support the Objects and
