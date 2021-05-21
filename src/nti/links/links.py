@@ -16,6 +16,7 @@ from functools import total_ordering
 from zope import interface
 
 from nti.links.interfaces import ILink
+from nti.links.interfaces import ILinkExternalHrefOnly
 
 logger = __import__('logging').getLogger(__name__)
 
@@ -127,3 +128,10 @@ class Link(object):
 
     def __reduce__(self):
         return self.__reduce_ex__(0)
+
+
+@interface.implementer(ILinkExternalHrefOnly)
+class LinkExternalHrefOnly(Link):
+    """
+    A link implementation that always renders as a plain href.
+    """
